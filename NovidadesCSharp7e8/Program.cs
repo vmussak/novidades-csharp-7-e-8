@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Threading.Tasks;
 using static System.Console;
 
 namespace NovidadesCSharp7e8
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
-            ReadKey();
+            await Task.Delay(500);
+            WriteLine("Done");
+            return 0;
         }
 
         public static int Somar(IEnumerable<object> valores)
@@ -185,6 +189,167 @@ namespace NovidadesCSharp7e8
             double constanteDeAvogadro = 6.022_140_857_747_474e23;
 
             decimal proporcaoAurea = 1.618_033_988_749M;
+        }
+
+        double Media(IEnumerable<int> numeros)
+        {
+            double Dividir(double a, double b)
+            {
+                if (b == 0)
+                    throw new DivideByZeroException();
+                return a / b;
+            }
+
+            var soma = numeros.Sum();
+
+            return Dividir(soma, numeros.Count());
+        }
+
+        void Adiciona1ESomaTudo(int[] numeros)
+        {
+            IEnumerable<int> Somar1(IEnumerable<int> ns)
+            {
+                foreach (var n in ns)
+                    yield return n + 1;
+            }
+
+            if (numeros == null)
+                throw new NullReferenceException();
+
+            WriteLine(Somar1(numeros).Sum());
+        }
+
+        public async ValueTask<int> Get8()
+        {
+            Task.Delay(100);
+            return 8;
+        }
+
+        public async ValueTask<int> SomaAsync(IEnumerable<ValueTask<int>> numeros)
+        {
+            var soma = 0;
+            foreach (var nTask in numeros)
+            {
+                var n = await nTask;
+                soma += n;
+            }
+
+            return soma;
+        }
+
+        void InferTupleNames()
+        {
+            var x = (f1: 1, f2: 2);
+
+            var tupla = (x.f1, x.f2, x);
+        }
+
+        void DefaultLiteralExpressions()
+        {
+            Func<string, bool> predicate = default;
+            int i = default;
+            N(default);
+        }
+
+        (int, int) N(int[] ns = default) => default;
+
+        string O()
+        {
+            return default;
+        }
+
+        T P<T>()
+        {
+            T t = default;
+            return t;
+        }
+
+        void M(int i, int j) { };
+
+        void N()
+        {
+            M(i: 2, 3);
+        }
+
+        void Underscore()
+        {
+
+            var m = 0b_101; //5
+
+            var n = 0x_00C0; //192
+
+        }
+
+        class Base
+        {
+            private protected int f;
+        }
+
+        class DerivadaMesmoAssembly : Base
+        {
+            void M()
+            {
+                var x = base.f;
+            }
+        }
+
+        class DerivadaOutroAssembly : Base
+        {
+            void M()
+            {
+                var x = base.f; //ERRO!
+            }
+        }
+
+        class Ponto
+        {
+            public Ponto(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+
+            public int X { get; set; }
+            public int Y { get; set; }
+        }
+
+        Vector Add(in Vector v1, in Vector v2)
+        {
+            v1 = default(Vector); //não funciona!
+            v1.X = 0; //não funciona
+            Foo(ref v1.X); //não funciona!
+
+            //OK:
+            return new Vector(v1.X + v2.X, v1.Y + v2.Y);
+        }
+
+        public static Ponto Soma(in this Ponto p1, in p2) => new Ponto(p1.X + p2.X, p1.Y + p2.Y);
+
+        void In()
+        {
+            Ponto p1 = new Ponto(1, 2), p2 = new Ponto(3, 4);
+            var pResultado = p1.Soma(p2);
+            var pResultado2 = p1.Soma(new Ponto(3, 4));
+        }
+
+        void Metodo(string? stringQuePodeSerNula)
+        {
+            WriteLine(stringQuePodeSerNula.Length); //warning
+
+            WriteLine(stringQuePodeSerNula!.Length); // no warning
+        }
+
+        interface I
+        {
+            void Metodo() { WriteLine("Interface Method"); }
+        }
+
+        class C : I { } //OK
+
+        void M()
+        {
+            I i new C();
+            i.Metodo(); // vai printar "Interface Method"
         }
     }
 }
